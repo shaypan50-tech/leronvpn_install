@@ -1,75 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN Подключение</title>
+    <title>LeronVPN - Подключение</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
+        
         .container {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            border: 2px solid #ffffff;
+            border-radius: 20px;
+            background: #000000;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
+        
+        .logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
         .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #ffffff;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 30px auto;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .status {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .error {
+            color: #ffffff;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        
+        .manual-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .manual-link:hover {
+            background: #ffffff;
+            color: #000000;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>🌐 Подключение VPN</h2>
+    <div class="container" id="mainContainer">
+        <div class="logo">🔐</div>
+        <h1>LeronVPN</h1>
+        <p class="subtitle">Безопасное подключение</p>
         <div class="spinner"></div>
-        <p>Перенаправление в v2RayTun...</p>
-        <p style="font-size: 12px; margin-top: 20px;">Если приложение не открылось автоматически, установите v2RayTun</p>
+        <p class="status">Открытие v2RayTun...</p>
+        <div class="info">
+            <p>📱 Убедитесь, что приложение <strong>v2RayTun</strong> установлено</p>
+            <p style="margin-top: 10px;">⚡ Если приложение не открылось, нажмите ниже для ручной настройки</p>
+        </div>
     </div>
 
     <script>
-        function getParameterByName(name) {
-            const url = window.location.href;
-            name = name.replace(/[\[\]]/g, '\\$&');
-            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-            const results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        function getConfig() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('config');
         }
 
-        window.onload = function() {
-            const config = getParameterByName('config');
+        function redirect() {
+            const config = getConfig();
             
-            if (config) {
-                // Пробуем открыть v2RayTun
-                const v2rayUrl = 'v2raytun://install-config?url=' + encodeURIComponent(config);
-                
-                // Немедленное перенаправление
-                window.location.href = v2rayUrl;
-                
-                // Запасной вариант через таймаут
-                setTimeout(function() {
-                    window.location.href = v2rayUrl;
-                }, 100);
-            } else {
-                document.querySelector('.container').innerHTML = '<h2>❌ Ошибка</h2><p>Конфигурация не найдена</p>';
+            if (!config) {
+                document.getElementById('mainContainer').innerHTML = `
+                    <div class="logo">❌</div>
+                    <h1>Ошибка</h1>
+                    <p class="error">Конфигурация VPN не найдена</p>
+                    <div class="info" style="margin-top: 30px;">
+                        <p>Попробуйте получить новую ссылку из бота</p>
+                    </div>
+                `;
+                return;
             }
-        };
+
+            // Формируем URL для v2RayTun
+            const v2rayUrl = `v2raytun://install-config?url=${encodeURIComponent(config)}`;
+            
+            console.log('Redirecting to:', v2rayUrl);
+            
+            // Попытка 1: Немедленный редирект
+            try {
+                window.location.href = v2rayUrl;
+            } catch (e) {
+                console.error('First redirect failed:', e);
+            }
+            
+            // Попытка 2: Через небольшую задержку
+            setTimeout(() => {
+                try {
+                    window.location.href = v2rayUrl;
+                } catch (e) {
+                    console.error('Second redirect failed:', e);
+                }
+            }, 500);
+            
+            // Попытка 3: Создаем невидимый iframe
+            setTimeout(() => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = v2rayUrl;
+                document.body.appendChild(iframe);
+            }, 1000);
+            
+            // Показываем кнопку для ручного подключения через 3 секунды
+            setTimeout(() => {
+                const container = document.getElementById('mainContainer');
+                container.innerHTML = `
+                    <div class="logo">🌐</div>
+                    <h1>Подключение</h1>
+                    <p class="subtitle">Приложение не открылось автоматически?</p>
+                    <a href="${v2rayUrl}" class="manual-link">
+                        🚀 Открыть v2RayTun вручную
+                    </a>
+                    <div class="info" style="margin-top: 30px;">
+                        <p><strong>Код конфигурации:</strong></p>
+                        <p style="margin-top: 10px; word-break: break-all; font-size: 12px; opacity: 0.7;">${config}</p>
+                        <p style="margin-top: 15px;">Скопируйте код и вставьте в приложение v2RayTun вручную</p>
+                    </div>
+                `;
+            }, 3000);
+        }
+
+        // Запускаем редирект при загрузке страницы
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', redirect);
+        } else {
+            redirect();
+        }
     </script>
 </body>
 </html>
