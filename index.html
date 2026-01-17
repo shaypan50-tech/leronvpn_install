@@ -2,19 +2,74 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>VPN Redirect</title>
-    <script>
-        function redirect() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const config = urlParams.get('config');
-            if (config) {
-                window.location.href = 'v2raytun://install-config?url=' + decodeURIComponent(config);
-            }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Подключение</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
-        window.onload = redirect;
-    </script>
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <p>Перенаправление в v2RayTun...</p>
+    <div class="container">
+        <h2>🌐 Подключение VPN</h2>
+        <div class="spinner"></div>
+        <p>Перенаправление в v2RayTun...</p>
+        <p style="font-size: 12px; margin-top: 20px;">Если приложение не открылось автоматически, установите v2RayTun</p>
+    </div>
+
+    <script>
+        function getParameterByName(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        window.onload = function() {
+            const config = getParameterByName('config');
+            
+            if (config) {
+                // Пробуем открыть v2RayTun
+                const v2rayUrl = 'v2raytun://install-config?url=' + encodeURIComponent(config);
+                
+                // Немедленное перенаправление
+                window.location.href = v2rayUrl;
+                
+                // Запасной вариант через таймаут
+                setTimeout(function() {
+                    window.location.href = v2rayUrl;
+                }, 100);
+            } else {
+                document.querySelector('.container').innerHTML = '<h2>❌ Ошибка</h2><p>Конфигурация не найдена</p>';
+            }
+        };
+    </script>
 </body>
 </html>
