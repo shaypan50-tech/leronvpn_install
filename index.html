@@ -118,8 +118,9 @@
         }
         
         .error {
-            color: #ff4444;
+            color: #ffffff;
             margin-top: 20px;
+            opacity: 0.8;
         }
 
         .success-message {
@@ -149,7 +150,7 @@
         </a>
         
         <div class="info">
-            <p>📱 При нажатии откроется приложение <strong>v2RayTun</strong></p>
+            <p>📱 При нажатии выберите <strong>v2RayTun</strong></p>
             <p style="margin-top: 10px;">✅ Конфигурация применится автоматически</p>
         </div>
 
@@ -181,22 +182,30 @@
             // Показываем код
             document.getElementById('configCode').textContent = config;
 
-            // Формируем URL для v2RayTun
-            const v2rayUrl = `v2raytun://install-config?url=${encodeURIComponent(config)}`;
+            // Попробуем разные варианты URL-схем для v2RayTun
+            const schemes = [
+                `v2raytun://install-config?url=${encodeURIComponent(config)}`,
+                `v2ray://${encodeURIComponent(config)}`,
+                config // Прямая ссылка vless://
+            ];
 
             // Кнопка подключения
             document.getElementById('connectBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Открываем приложение
-                window.location.href = v2rayUrl;
+                // Пробуем каждую схему по очереди
+                schemes.forEach((url, index) => {
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, index * 300);
+                });
                 
                 // Показываем сообщение
-                const container = document.querySelector('.container');
+                const infoDiv = document.querySelector('.info');
                 const successMsg = document.createElement('div');
                 successMsg.className = 'success-message';
-                successMsg.innerHTML = '✅ Приложение открывается...<br><small>Если ничего не произошло, скопируйте код ниже</small>';
-                container.insertBefore(successMsg, document.querySelector('.info'));
+                successMsg.innerHTML = '✅ Открытие приложения...<br><small>Выберите v2RayTun в диалоге</small>';
+                infoDiv.parentNode.insertBefore(successMsg, infoDiv);
                 
                 setTimeout(() => {
                     successMsg.remove();
